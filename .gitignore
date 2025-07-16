@@ -1,0 +1,25 @@
+# Nginx
+*.pid
+access.log
+error.log
+
+# Docker
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Configuration
+*.local.conf
+.env
+
+# Logs
+logs/
+*.log
