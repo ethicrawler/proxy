@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  ethicrawler-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ethicrawler-proxy
+    ports:
+      - "80:80"
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - ENFORCEMENT_CACHE_TTL=300
+      - PAYMENT_CACHE_TTL=60
+    depends_on:
+      - backend
+    volumes:
+      - ./logs:/var/log/nginx
+    networks:
+      - ethicrawler-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  backend:
+    image: ethicrawler/backend:latest
+    container_name: ethicrawler-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://ethicrawler:password@postgres:5432/ethicrawler
+      - JWT_SECRET_KEY=dev-secret-key-change-in-production
+      - STELLAR_NETWORK=testnet
+    networks:
+      - ethicrawler-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: ethicrawler-postgres
+    environment:
+      - POSTGRES_USER=ethicrawler
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ethicrawler
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ethicrawler-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ethicrawler"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ethicrawler-redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - ethicrawler-network
+    restart: unless-stopped
+
+networks:
+  ethicrawler-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

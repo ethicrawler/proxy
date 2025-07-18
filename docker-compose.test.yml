@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  ethicrawler-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ethicrawler-proxy-test
+    ports:
+      - "80:80"
+    environment:
+      - BACKEND_URL=http://mock-backend:8000
+      - ENFORCEMENT_CACHE_TTL=60
+      - PAYMENT_CACHE_TTL=30
+    depends_on:
+      - mock-backend
+    volumes:
+      - ./logs:/var/log/nginx
+    networks:
+      - ethicrawler-test-network
+    restart: unless-stopped
+
+  mock-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.mock
+    container_name: ethicrawler-mock-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    networks:
+      - ethicrawler-test-network
+    restart: unless-stopped
+
+networks:
+  ethicrawler-test-network:
+    driver: bridge

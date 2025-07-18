@@ -1,0 +1,15 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Flask
+RUN pip install flask
+
+# Copy mock backend
+COPY mock-backend.py .
+
+# Expose port
+EXPOSE 8000
+
+# Run the mock backend
+CMD ["python", "mock-backend.py"]

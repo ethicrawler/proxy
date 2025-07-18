@@ -1,10 +1,21 @@
-# Nginx
-*.pid
-access.log
-error.log
+# Logs
+logs/
+*.log
 
 # Docker
-.dockerignore
+.docker/
+
+# Environment
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
@@ -12,14 +23,6 @@ error.log
 *.swp
 *.swo
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Configuration
-*.local.conf
-.env
-
-# Logs
-logs/
-*.log
+# Build artifacts
+dist/
+build/
